@@ -1,0 +1,82 @@
+{
+  "id": "insider-usb-copy",
+  "title": "Employee on notice copies the customer database to USB",
+  "category": "insider",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1014",
+    "source": "dlp",
+    "time": "18:05",
+    "rule": "Bulk copy to removable media",
+    "severity_hint": "medium",
+    "host": "ws-sales-09",
+    "user": "t.garrido",
+    "description": "4.2 GB of customer exports copied to a USB drive.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "ws-sales-09": {
+        "role": "workstation",
+        "owner": "t.garrido",
+        "criticality": "medium",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "t.garrido": {
+        "title": "Account Executive",
+        "department": "Sales",
+        "privileged": false,
+        "notes": "HR record: resignation submitted 3 days ago, last day in 11 days."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "17:58",
+        "host": "ws-sales-09",
+        "user": "t.garrido",
+        "text": "CRM export 'all_customers_full.csv' 4.1 GB by t.garrido (previous 90-day maximum: 20 MB)"
+      },
+      {
+        "id": "L2",
+        "time": "18:05",
+        "host": "ws-sales-09",
+        "user": "t.garrido",
+        "text": "USB mass storage device (serial unregistered) connected, file copy of 4.2 GB started"
+      },
+      {
+        "id": "L3",
+        "time": "18:09",
+        "host": "ws-sales-09",
+        "user": "t.garrido",
+        "text": "Personal webmail opened in browser, attachment upload attempted and blocked by DLP"
+      }
+    ],
+    "intel": {},
+    "related": {
+      "t.garrido": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 4,
+    "technique": "T1052.001",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "escalate_to_ir",
+      "collect_forensics"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

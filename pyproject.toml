@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "soc-agent-bench"
+version = "1.0.0"
+description = "A zero-dependency benchmark for SOC triage agents: tool use, evidence, safety and prompt-injection resistance."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+socbench = "socbench.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["socbench*"]
+
+[tool.setuptools.package-data]
+socbench = ["data/*.json"]

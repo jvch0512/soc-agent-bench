@@ -1,0 +1,81 @@
+{
+  "id": "container-cryptominer",
+  "title": "Container pulling a mining pool",
+  "category": "malware",
+  "difficulty": "easy",
+  "budget_steps": 6,
+  "alert": {
+    "id": "A-1013",
+    "source": "cloud-runtime",
+    "time": "10:05",
+    "rule": "Connection to known mining pool",
+    "severity_hint": "medium",
+    "host": "k8s-node-4",
+    "user": null,
+    "description": "Pod web-cache-77 connected to a mining pool and uses 95% CPU.",
+    "iocs": [
+      "pool.minexample.example"
+    ]
+  },
+  "world": {
+    "assets": {
+      "k8s-node-4": {
+        "role": "kubernetes-node",
+        "owner": "platform",
+        "criticality": "high",
+        "os": "linux",
+        "notes": ""
+      }
+    },
+    "users": {},
+    "logs": [
+      {
+        "id": "L1",
+        "time": "10:00",
+        "host": "k8s-node-4",
+        "user": null,
+        "text": "Pod web-cache-77 started from image registry.example/web-cache:latest (digest changed from the previous deploy)"
+      },
+      {
+        "id": "L2",
+        "time": "10:05",
+        "host": "k8s-node-4",
+        "user": null,
+        "text": "Pod web-cache-77 stratum+tcp connection to pool.minexample.example:3333"
+      },
+      {
+        "id": "L3",
+        "time": "10:06",
+        "host": "k8s-node-4",
+        "user": null,
+        "text": "Pod web-cache-77 CPU 95% sustained for 6 minutes, baseline 4%"
+      }
+    ],
+    "intel": {
+      "pool.minexample.example": {
+        "verdict": "malicious",
+        "detail": "Public mining pool, not business related."
+      }
+    },
+    "related": {
+      "k8s-node-4": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 3,
+    "technique": "T1496",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "block_ioc",
+      "collect_forensics"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

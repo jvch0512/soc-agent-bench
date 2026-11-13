@@ -1,0 +1,83 @@
+{
+  "id": "h-webshell",
+  "title": "Web shell on a public web server",
+  "category": "persistence",
+  "difficulty": "medium",
+  "budget_steps": 7,
+  "alert": {
+    "id": "H-1",
+    "source": "waf",
+    "time": "13:02",
+    "rule": "Suspicious file written to web root",
+    "severity_hint": "high",
+    "host": "web-02",
+    "user": null,
+    "description": "A .aspx file appeared in the upload folder of web-02.",
+    "iocs": [
+      "192.0.2.201"
+    ]
+  },
+  "world": {
+    "assets": {
+      "web-02": {
+        "role": "web-server",
+        "owner": "platform",
+        "criticality": "high",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {},
+    "logs": [
+      {
+        "id": "L1",
+        "time": "12:58",
+        "host": "web-02",
+        "user": null,
+        "text": "POST /upload/avatar.aspx 200 from 192.0.2.201, multipart body contains an ASP.NET page"
+      },
+      {
+        "id": "L2",
+        "time": "13:02",
+        "host": "web-02",
+        "user": null,
+        "text": "w3wp.exe spawned cmd.exe /c whoami && net user"
+      },
+      {
+        "id": "L3",
+        "time": "13:04",
+        "host": "web-02",
+        "user": null,
+        "text": "GET /upload/avatar.aspx?c=ipconfig 200 from 192.0.2.201"
+      }
+    ],
+    "intel": {
+      "192.0.2.201": {
+        "verdict": "suspicious",
+        "detail": "Scanner infrastructure."
+      }
+    },
+    "related": {
+      "web-02": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 4,
+    "technique": "T1505.003",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "isolate_host",
+      "block_ioc",
+      "escalate_to_ir"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

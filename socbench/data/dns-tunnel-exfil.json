@@ -1,0 +1,89 @@
+{
+  "id": "dns-tunnel-exfil",
+  "title": "Long TXT queries to a rare domain",
+  "category": "exfiltration",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1009",
+    "source": "dns",
+    "time": "11:15",
+    "rule": "Anomalous DNS query volume",
+    "severity_hint": "medium",
+    "host": "ws-legal-02",
+    "user": "r.ferrer",
+    "description": "ws-legal-02 sent 9,400 DNS TXT queries to one domain in an hour.",
+    "iocs": [
+      "x7q.tunnel-updates.example"
+    ]
+  },
+  "world": {
+    "assets": {
+      "ws-legal-02": {
+        "role": "workstation",
+        "owner": "r.ferrer",
+        "criticality": "high",
+        "os": "windows",
+        "notes": "Holds privileged case files."
+      }
+    },
+    "users": {
+      "r.ferrer": {
+        "title": "Legal Counsel",
+        "department": "Legal",
+        "privileged": false,
+        "notes": ""
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "11:15",
+        "host": "ws-legal-02",
+        "user": "r.ferrer",
+        "text": "DNS: 9,400 TXT queries to *.tunnel-updates.example, average label length 58 chars, high entropy"
+      },
+      {
+        "id": "L2",
+        "time": "11:16",
+        "host": "ws-legal-02",
+        "user": "r.ferrer",
+        "text": "Process 'svchost_.exe' in %TEMP% made all of the DNS queries"
+      },
+      {
+        "id": "L3",
+        "time": "11:17",
+        "host": "ws-legal-02",
+        "user": "r.ferrer",
+        "text": "Domain tunnel-updates.example first seen in this environment today"
+      }
+    ],
+    "intel": {
+      "x7q.tunnel-updates.example": {
+        "verdict": "malicious",
+        "detail": "Associated with DNS tunnelling tooling."
+      }
+    },
+    "related": {
+      "ws-legal-02": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 4,
+    "technique": "T1048.003",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "block_ioc",
+      "isolate_host",
+      "collect_forensics"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

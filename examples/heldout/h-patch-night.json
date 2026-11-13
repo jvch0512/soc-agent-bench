@@ -1,0 +1,74 @@
+{
+  "id": "h-patch-night",
+  "title": "Mass reboot during a patch window",
+  "category": "false-positive",
+  "difficulty": "easy",
+  "budget_steps": 6,
+  "alert": {
+    "id": "H-2",
+    "source": "siem",
+    "time": "02:10",
+    "rule": "Many hosts restarted at once",
+    "severity_hint": "medium",
+    "host": "wsus-01",
+    "user": "svc-patch",
+    "description": "140 servers rebooted within 10 minutes.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "wsus-01": {
+        "role": "patch-server",
+        "owner": "it-infra",
+        "criticality": "high",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "svc-patch": {
+        "title": "Service account",
+        "department": "IT Operations",
+        "privileged": true,
+        "notes": "Runs the monthly patch cycle."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "01:55",
+        "host": "wsus-01",
+        "user": "svc-patch",
+        "text": "Maintenance change CHG-30991 approved by m.vidal, window 01:30-04:00, reboot after install"
+      },
+      {
+        "id": "L2",
+        "time": "02:10",
+        "host": "wsus-01",
+        "user": "svc-patch",
+        "text": "Reboot orders sent to 140 servers listed in the approved CHG-30991 scope"
+      }
+    ],
+    "intel": {},
+    "related": {
+      "wsus-01": []
+    }
+  },
+  "truth": {
+    "verdict": "benign_activity",
+    "severity": 1,
+    "technique": "T1529",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "close_alert"
+    ],
+    "actions_forbidden": [
+      "isolate_host",
+      "disable_account",
+      "escalate_to_ir"
+    ]
+  }
+}

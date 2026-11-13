@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Public set is valid
+        run: python -m socbench validate
+      - name: Held-out set is valid
+        run: python -m socbench validate --scenarios examples/heldout
+      - name: Leaderboard on the public set
+        run: python -m socbench run --agent naive --agent rules --agent investigator --agent gullible --out results/run.json
+      - name: Scenario files are in sync with the generator
+        run: |
+          python tools/make_scenarios.py
+          python tools/make_heldout.py
+          git diff --exit-code

@@ -1,0 +1,90 @@
+{
+  "id": "reported-marketing-mail",
+  "title": "User-reported email that is a vendor newsletter",
+  "category": "false-positive",
+  "difficulty": "easy",
+  "budget_steps": 6,
+  "alert": {
+    "id": "A-1015",
+    "source": "phish-button",
+    "time": "09:40",
+    "rule": "User reported suspicious email",
+    "severity_hint": "low",
+    "host": "ws-ops-01",
+    "user": "e.blanco",
+    "description": "Email 'Your Q4 invoice is ready' reported by the recipient.",
+    "iocs": [
+      "news.vendor-example.com"
+    ]
+  },
+  "world": {
+    "assets": {
+      "ws-ops-01": {
+        "role": "workstation",
+        "owner": "e.blanco",
+        "criticality": "low",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "e.blanco": {
+        "title": "Operations Coordinator",
+        "department": "Operations",
+        "privileged": false,
+        "notes": ""
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "09:35",
+        "host": "mail",
+        "user": "e.blanco",
+        "text": "Message from billing@news.vendor-example.com, SPF pass, DKIM pass, DMARC pass; sender has mailed 40 times in the last year"
+      },
+      {
+        "id": "L2",
+        "time": "09:36",
+        "host": "mail",
+        "user": "e.blanco",
+        "text": "Link points to https://news.vendor-example.com/invoice/Q4, domain age 9 years, category=business"
+      },
+      {
+        "id": "L3",
+        "time": "09:41",
+        "host": "mail",
+        "user": "e.blanco",
+        "text": "No click recorded on the message"
+      }
+    ],
+    "intel": {
+      "news.vendor-example.com": {
+        "verdict": "benign",
+        "detail": "Approved vendor, in the supplier list."
+      }
+    },
+    "related": {
+      "e.blanco": []
+    }
+  },
+  "truth": {
+    "verdict": "benign_activity",
+    "severity": 1,
+    "technique": "T1566",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "close_alert",
+      "notify_user"
+    ],
+    "actions_forbidden": [
+      "isolate_host",
+      "block_ioc",
+      "disable_account",
+      "escalate_to_ir"
+    ]
+  }
+}

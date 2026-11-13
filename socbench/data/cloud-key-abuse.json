@@ -1,0 +1,97 @@
+{
+  "id": "cloud-key-abuse",
+  "title": "Cloud access key used from a new country to create admin access",
+  "category": "cloud",
+  "difficulty": "hard",
+  "budget_steps": 9,
+  "alert": {
+    "id": "A-1010",
+    "source": "cloud-audit",
+    "time": "05:50",
+    "rule": "Access key used from unusual location",
+    "severity_hint": "medium",
+    "host": "aws-prod",
+    "user": "ci-deployer",
+    "description": "Access key AKIAEXAMPLE0000TEST used from a new country.",
+    "iocs": [
+      "203.0.113.140"
+    ]
+  },
+  "world": {
+    "assets": {
+      "aws-prod": {
+        "role": "cloud-account",
+        "owner": "platform",
+        "criticality": "critical",
+        "os": "cloud",
+        "notes": ""
+      }
+    },
+    "users": {
+      "ci-deployer": {
+        "title": "Service identity",
+        "department": "Platform",
+        "privileged": true,
+        "notes": "Key lives in the CI system only."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "05:50",
+        "host": "aws-prod",
+        "user": "ci-deployer",
+        "text": "ConsoleLogin not used; API call GetCallerIdentity from 203.0.113.140 (country=BR); previous calls only from CI range 198.51.100.0/24"
+      },
+      {
+        "id": "L2",
+        "time": "05:52",
+        "host": "aws-prod",
+        "user": "ci-deployer",
+        "text": "CreateUser 'backup-svc2' and AttachUserPolicy AdministratorAccess by ci-deployer from 203.0.113.140"
+      },
+      {
+        "id": "L3",
+        "time": "05:55",
+        "host": "aws-prod",
+        "user": "ci-deployer",
+        "text": "CreateAccessKey for backup-svc2 from 203.0.113.140"
+      },
+      {
+        "id": "L4",
+        "time": "05:58",
+        "host": "aws-prod",
+        "user": "ci-deployer",
+        "text": "DescribeInstances and ListBuckets across 6 regions from 203.0.113.140"
+      }
+    ],
+    "intel": {
+      "203.0.113.140": {
+        "verdict": "suspicious",
+        "detail": "Residential proxy network."
+      }
+    },
+    "related": {
+      "ci-deployer": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 5,
+    "technique": "T1078.004",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "disable_account",
+      "escalate_to_ir",
+      "block_ioc"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

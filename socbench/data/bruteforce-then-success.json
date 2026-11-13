@@ -1,0 +1,97 @@
+{
+  "id": "bruteforce-then-success",
+  "title": "Password spraying ends in a successful login",
+  "category": "credential-access",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1004",
+    "source": "siem",
+    "time": "02:44",
+    "rule": "Successful login after many failures",
+    "severity_hint": "high",
+    "host": "vpn-gw",
+    "user": "carla.ibanez",
+    "description": "Account carla.ibanez logged in to VPN after 61 failures from the same address.",
+    "iocs": [
+      "203.0.113.99"
+    ]
+  },
+  "world": {
+    "assets": {
+      "vpn-gw": {
+        "role": "vpn-gateway",
+        "owner": "it-network",
+        "criticality": "high",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "carla.ibanez": {
+        "title": "Sales Manager",
+        "department": "Sales",
+        "privileged": false,
+        "notes": ""
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "02:31",
+        "host": "vpn-gw",
+        "user": "carla.ibanez",
+        "text": "VPN auth failure x61 from 203.0.113.99 over 13 minutes (also tried 14 other users)"
+      },
+      {
+        "id": "L2",
+        "time": "02:44",
+        "host": "vpn-gw",
+        "user": "carla.ibanez",
+        "text": "VPN auth success from 203.0.113.99 (country=NL), device not registered, MFA push approved after 4 prompts"
+      },
+      {
+        "id": "L3",
+        "time": "02:47",
+        "host": "file01",
+        "user": "carla.ibanez",
+        "text": "SMB: carla.ibanez enumerated 38 shares and read 212 files in /finance/"
+      },
+      {
+        "id": "L4",
+        "time": "17:30",
+        "host": "vpn-gw",
+        "user": "carla.ibanez",
+        "text": "VPN auth success from 198.51.100.8 (country=ES), registered laptop, previous day"
+      }
+    ],
+    "intel": {
+      "203.0.113.99": {
+        "verdict": "malicious",
+        "detail": "Password spraying infrastructure."
+      }
+    },
+    "related": {
+      "carla.ibanez": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 4,
+    "technique": "T1110.003",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "reset_password",
+      "block_ioc",
+      "escalate_to_ir"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

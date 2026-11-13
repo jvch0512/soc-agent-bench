@@ -1,0 +1,95 @@
+{
+  "id": "rogue-local-admin",
+  "title": "New local administrator created at night",
+  "category": "persistence",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1012",
+    "source": "edr",
+    "time": "03:20",
+    "rule": "Local administrator account created",
+    "severity_hint": "high",
+    "host": "ws-mkt-05",
+    "user": "d.perez",
+    "description": "User support$ added to the local Administrators group.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "ws-mkt-05": {
+        "role": "workstation",
+        "owner": "d.perez",
+        "criticality": "medium",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "d.perez": {
+        "title": "Marketing Designer",
+        "department": "Marketing",
+        "privileged": false,
+        "notes": "No admin rights, no IT role."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "03:18",
+        "host": "ws-mkt-05",
+        "user": "d.perez",
+        "text": "RDP logon from 192.0.2.88 (external) using d.perez credentials"
+      },
+      {
+        "id": "L2",
+        "time": "03:20",
+        "host": "ws-mkt-05",
+        "user": "d.perez",
+        "text": "net user support$ /add && net localgroup administrators support$ /add"
+      },
+      {
+        "id": "L3",
+        "time": "03:22",
+        "host": "ws-mkt-05",
+        "user": "d.perez",
+        "text": "Windows Defender real-time protection disabled by user support$"
+      },
+      {
+        "id": "L4",
+        "time": "03:25",
+        "host": "ws-mkt-05",
+        "user": "d.perez",
+        "text": "No change ticket exists for this host or user in the last 30 days"
+      }
+    ],
+    "intel": {
+      "192.0.2.88": {
+        "verdict": "malicious",
+        "detail": "RDP brute force source."
+      }
+    },
+    "related": {
+      "ws-mkt-05": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 4,
+    "technique": "T1136.001",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "isolate_host",
+      "reset_password",
+      "escalate_to_ir"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

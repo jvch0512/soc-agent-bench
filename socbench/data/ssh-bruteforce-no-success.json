@@ -1,0 +1,81 @@
+{
+  "id": "ssh-bruteforce-no-success",
+  "title": "SSH password guessing against a bastion, no success",
+  "category": "credential-access",
+  "difficulty": "easy",
+  "budget_steps": 6,
+  "alert": {
+    "id": "A-1003",
+    "source": "siem",
+    "time": "03:12",
+    "rule": "Excessive failed SSH logins",
+    "severity_hint": "medium",
+    "host": "bastion-01",
+    "user": null,
+    "description": "412 failed SSH logins from one external address in 10 minutes.",
+    "iocs": [
+      "192.0.2.44"
+    ]
+  },
+  "world": {
+    "assets": {
+      "bastion-01": {
+        "role": "bastion",
+        "owner": "it-infra",
+        "criticality": "high",
+        "os": "linux",
+        "notes": "Key-only auth is enforced for admins."
+      }
+    },
+    "users": {},
+    "logs": [
+      {
+        "id": "L1",
+        "time": "03:02",
+        "host": "bastion-01",
+        "user": null,
+        "text": "sshd: 412 Failed password for invalid user from 192.0.2.44 (users tried: root, admin, ubuntu, oracle, test)"
+      },
+      {
+        "id": "L2",
+        "time": "03:12",
+        "host": "bastion-01",
+        "user": null,
+        "text": "sshd: no Accepted entries from 192.0.2.44 in the window"
+      },
+      {
+        "id": "L3",
+        "time": "03:12",
+        "host": "bastion-01",
+        "user": null,
+        "text": "fail2ban: 192.0.2.44 would be banned, ban action disabled by policy"
+      }
+    ],
+    "intel": {
+      "192.0.2.44": {
+        "verdict": "malicious",
+        "detail": "Reported 900+ times for SSH scanning this month."
+      }
+    },
+    "related": {
+      "bastion-01": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 2,
+    "technique": "T1110.001",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "block_ioc"
+    ],
+    "actions_forbidden": [
+      "isolate_host",
+      "escalate_to_ir",
+      "disable_account"
+    ]
+  }
+}

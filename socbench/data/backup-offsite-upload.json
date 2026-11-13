@@ -1,0 +1,88 @@
+{
+  "id": "backup-offsite-upload",
+  "title": "Large upload from a backup server to cloud storage",
+  "category": "false-positive",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1007",
+    "source": "dlp",
+    "time": "02:30",
+    "rule": "Large outbound transfer to cloud storage",
+    "severity_hint": "high",
+    "host": "bkp-01",
+    "user": "svc-backup",
+    "description": "38 GB uploaded to an external storage endpoint.",
+    "iocs": [
+      "198.51.100.130"
+    ]
+  },
+  "world": {
+    "assets": {
+      "bkp-01": {
+        "role": "backup-server",
+        "owner": "it-infra",
+        "criticality": "critical",
+        "os": "linux",
+        "notes": "Replicates nightly to the offsite vault."
+      }
+    },
+    "users": {
+      "svc-backup": {
+        "title": "Service account",
+        "department": "IT Operations",
+        "privileged": false,
+        "notes": "Used by the backup job only."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "02:00",
+        "host": "bkp-01",
+        "user": "svc-backup",
+        "text": "Job 'nightly-offsite' started, schedule daily 02:00, destination vault.backup-provider.example"
+      },
+      {
+        "id": "L2",
+        "time": "02:30",
+        "host": "bkp-01",
+        "user": "svc-backup",
+        "text": "Upload of 38 GB to vault.backup-provider.example (198.51.100.130), TLS, size within 5% of the 30-day average"
+      },
+      {
+        "id": "L3",
+        "time": "02:31",
+        "host": "bkp-01",
+        "user": "svc-backup",
+        "text": "Job 'nightly-offsite' completed OK, 38.1 GB"
+      }
+    ],
+    "intel": {
+      "198.51.100.130": {
+        "verdict": "benign",
+        "detail": "Contracted offsite backup provider."
+      }
+    },
+    "related": {
+      "bkp-01": []
+    }
+  },
+  "truth": {
+    "verdict": "false_positive",
+    "severity": 1,
+    "technique": "T1567.002",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "close_alert"
+    ],
+    "actions_forbidden": [
+      "isolate_host",
+      "disable_account",
+      "block_ioc"
+    ]
+  }
+}

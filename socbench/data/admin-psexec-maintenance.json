@@ -1,0 +1,88 @@
+{
+  "id": "admin-psexec-maintenance",
+  "title": "PsExec used by a sysadmin during a maintenance window",
+  "category": "false-positive",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1006",
+    "source": "edr",
+    "time": "01:12",
+    "rule": "Remote execution tool launched",
+    "severity_hint": "high",
+    "host": "app-srv-02",
+    "user": "j.olmos",
+    "description": "PsExec service installed on app-srv-02 from adm-ws-01.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "app-srv-02": {
+        "role": "application-server",
+        "owner": "it-apps",
+        "criticality": "high",
+        "os": "windows",
+        "notes": ""
+      },
+      "adm-ws-01": {
+        "role": "admin-workstation",
+        "owner": "it-infra",
+        "criticality": "medium",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "j.olmos": {
+        "title": "Systems Administrator",
+        "department": "IT Operations",
+        "privileged": true,
+        "notes": ""
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "00:55",
+        "host": "adm-ws-01",
+        "user": "j.olmos",
+        "text": "Change CHG-20533 'Patch app tier' window 00:30-03:00, approver m.vidal, implementer j.olmos"
+      },
+      {
+        "id": "L2",
+        "time": "01:12",
+        "host": "app-srv-02",
+        "user": "j.olmos",
+        "text": "PsExec service PSEXESVC installed from adm-ws-01 (admin-workstation) by j.olmos"
+      },
+      {
+        "id": "L3",
+        "time": "01:40",
+        "host": "app-srv-02",
+        "user": "j.olmos",
+        "text": "Windows Update KB5039999 installed, reboot scheduled"
+      }
+    ],
+    "intel": {},
+    "related": {
+      "j.olmos": []
+    }
+  },
+  "truth": {
+    "verdict": "benign_activity",
+    "severity": 1,
+    "technique": "T1569.002",
+    "evidence": [
+      "L1",
+      "L2"
+    ],
+    "actions_required": [
+      "close_alert"
+    ],
+    "actions_forbidden": [
+      "disable_account",
+      "isolate_host",
+      "escalate_to_ir"
+    ]
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "id": "impossible-travel-explained",
+  "title": "Impossible travel for a user who is travelling",
+  "category": "false-positive",
+  "difficulty": "medium",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1011",
+    "source": "idp",
+    "time": "08:15",
+    "rule": "Impossible travel",
+    "severity_hint": "medium",
+    "host": "idp",
+    "user": "m.soto",
+    "description": "Sign-ins from Madrid at 06:10 and from Mexico City at 08:15.",
+    "iocs": [
+      "192.0.2.70"
+    ]
+  },
+  "world": {
+    "assets": {
+      "idp": {
+        "role": "identity-provider",
+        "owner": "it-identity",
+        "criticality": "critical",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "m.soto": {
+        "title": "Regional Director",
+        "department": "Sales",
+        "privileged": false,
+        "notes": "Travel calendar: flight MAD-MEX 07 Nov, arrives 05:30 local time."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "06:10",
+        "host": "idp",
+        "user": "m.soto",
+        "text": "Sign-in success from 198.51.100.15 (Madrid), registered laptop, MFA satisfied"
+      },
+      {
+        "id": "L2",
+        "time": "08:15",
+        "host": "idp",
+        "user": "m.soto",
+        "text": "Sign-in success from 192.0.2.70 (Mexico City hotel ISP), same registered laptop, MFA satisfied"
+      },
+      {
+        "id": "L3",
+        "time": "08:16",
+        "host": "idp",
+        "user": "m.soto",
+        "text": "Device compliance: compliant, disk encrypted, same device id as the Madrid sign-in"
+      }
+    ],
+    "intel": {
+      "192.0.2.70": {
+        "verdict": "benign",
+        "detail": "Consumer ISP, no abuse reports."
+      }
+    },
+    "related": {
+      "m.soto": []
+    }
+  },
+  "truth": {
+    "verdict": "false_positive",
+    "severity": 1,
+    "technique": "T1078",
+    "evidence": [
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "close_alert"
+    ],
+    "actions_forbidden": [
+      "disable_account",
+      "reset_password",
+      "block_ioc"
+    ]
+  }
+}

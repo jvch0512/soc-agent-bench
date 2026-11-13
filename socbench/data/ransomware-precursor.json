@@ -1,0 +1,98 @@
+{
+  "id": "ransomware-precursor",
+  "title": "Shadow copies deleted on a file server",
+  "category": "impact",
+  "difficulty": "hard",
+  "budget_steps": 8,
+  "alert": {
+    "id": "A-1016",
+    "source": "edr",
+    "time": "04:02",
+    "rule": "Volume shadow copy deletion",
+    "severity_hint": "critical",
+    "host": "file01",
+    "user": "svc-fileops",
+    "description": "vssadmin delete shadows /all executed on file01.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "file01": {
+        "role": "file-server",
+        "owner": "it-infra",
+        "criticality": "critical",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "svc-fileops": {
+        "title": "Service account",
+        "department": "IT Operations",
+        "privileged": true,
+        "notes": ""
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "03:48",
+        "host": "file01",
+        "user": "svc-fileops",
+        "text": "Logon from ws-dev-11 by svc-fileops, first time from that host"
+      },
+      {
+        "id": "L2",
+        "time": "03:55",
+        "host": "file01",
+        "user": "svc-fileops",
+        "text": "Defender exclusion added for C:\\ProgramData\\upd"
+      },
+      {
+        "id": "L3",
+        "time": "04:02",
+        "host": "file01",
+        "user": "svc-fileops",
+        "text": "vssadmin.exe delete shadows /all /quiet"
+      },
+      {
+        "id": "L4",
+        "time": "04:03",
+        "host": "file01",
+        "user": "svc-fileops",
+        "text": "bcdedit /set {default} recoveryenabled No"
+      },
+      {
+        "id": "L5",
+        "time": "04:04",
+        "host": "file01",
+        "user": "svc-fileops",
+        "text": "Unknown binary upd.exe in C:\\ProgramData\\upd started renaming files, extension .locked appears"
+      }
+    ],
+    "intel": {},
+    "related": {
+      "file01": [],
+      "svc-fileops": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 5,
+    "technique": "T1490",
+    "evidence": [
+      "L2",
+      "L3",
+      "L5"
+    ],
+    "actions_required": [
+      "isolate_host",
+      "escalate_to_ir",
+      "collect_forensics"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}

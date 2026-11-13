@@ -1,0 +1,98 @@
+{
+  "id": "lateral-movement-smb",
+  "title": "Service account moving across servers over SMB",
+  "category": "lateral-movement",
+  "difficulty": "hard",
+  "budget_steps": 9,
+  "alert": {
+    "id": "A-1008",
+    "source": "edr",
+    "time": "16:40",
+    "rule": "Admin share access to many hosts",
+    "severity_hint": "high",
+    "host": "ws-dev-11",
+    "user": "svc-deploy",
+    "description": "svc-deploy authenticated to 23 servers from a developer workstation.",
+    "iocs": []
+  },
+  "world": {
+    "assets": {
+      "ws-dev-11": {
+        "role": "workstation",
+        "owner": "p.navarro",
+        "criticality": "medium",
+        "os": "windows",
+        "notes": ""
+      },
+      "dc01": {
+        "role": "domain-controller",
+        "owner": "it-infra",
+        "criticality": "critical",
+        "os": "windows",
+        "notes": ""
+      }
+    },
+    "users": {
+      "svc-deploy": {
+        "title": "Service account",
+        "department": "Engineering",
+        "privileged": true,
+        "notes": "Normally used only by the CI server ci-01."
+      }
+    },
+    "logs": [
+      {
+        "id": "L1",
+        "time": "16:31",
+        "host": "ws-dev-11",
+        "user": "svc-deploy",
+        "text": "NTLM logon type 3 for svc-deploy from ws-dev-11 (never before; the account only logs on from ci-01)"
+      },
+      {
+        "id": "L2",
+        "time": "16:35",
+        "host": "ws-dev-11",
+        "user": "svc-deploy",
+        "text": "Admin$ share accessed on 23 servers within 4 minutes"
+      },
+      {
+        "id": "L3",
+        "time": "16:38",
+        "host": "ws-dev-11",
+        "user": "svc-deploy",
+        "text": "Process rundll32.exe loaded comsvcs.dll MiniDump targeting lsass.exe"
+      },
+      {
+        "id": "L4",
+        "time": "16:39",
+        "host": "dc01",
+        "user": "svc-deploy",
+        "text": "Kerberos TGS requests for 14 SPNs by svc-deploy"
+      }
+    ],
+    "intel": {},
+    "related": {
+      "svc-deploy": [],
+      "ws-dev-11": []
+    }
+  },
+  "truth": {
+    "verdict": "true_positive",
+    "severity": 5,
+    "technique": "T1021.002",
+    "evidence": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "actions_required": [
+      "isolate_host",
+      "disable_account",
+      "escalate_to_ir"
+    ],
+    "actions_forbidden": [
+      "close_alert",
+      "no_action"
+    ]
+  }
+}
